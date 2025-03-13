@@ -9,7 +9,15 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text
+        style={{
+          fontSize: 32,
+          fontWeight: "bold",
+          color: "#EB061C",
+        }}
+      >
+        Quit Gambling
+      </Text>
     </View>
   );
 }
