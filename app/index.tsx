@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StatusBar, useColorScheme, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Storage keys
+const STORAGE_KEY_RECOVERY_STARTED = 'quitgambling_recovery_started';
+const STORAGE_KEY_LAST_PRESSED = 'quitgambling_last_pressed';
 
 export default function Index() {
   const colorScheme = useColorScheme();
@@ -8,6 +13,48 @@ export default function Index() {
   const [lastPressed, setLastPressed] = useState<number | null>(null);
   const [timeElapsed, setTimeElapsed] = useState<string>('0d 0hrs 0min 0s');
   const [recoveryStarted, setRecoveryStarted] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Load saved state from AsyncStorage
+  useEffect(() => {
+    const loadSavedState = async () => {
+      try {
+        const savedRecoveryStarted = await AsyncStorage.getItem(STORAGE_KEY_RECOVERY_STARTED);
+        const savedLastPressed = await AsyncStorage.getItem(STORAGE_KEY_LAST_PRESSED);
+        
+        if (savedRecoveryStarted === 'true' && savedLastPressed) {
+          setRecoveryStarted(true);
+          setLastPressed(parseInt(savedLastPressed));
+        }
+      } catch (error) {
+        console.error('Error loading saved state:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSavedState();
+  }, []);
+
+  // Save state to AsyncStorage whenever it changes
+  useEffect(() => {
+    const saveState = async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY_RECOVERY_STARTED, recoveryStarted ? 'true' : 'false');
+        if (lastPressed) {
+          await AsyncStorage.setItem(STORAGE_KEY_LAST_PRESSED, lastPressed.toString());
+        } else {
+          await AsyncStorage.removeItem(STORAGE_KEY_LAST_PRESSED);
+        }
+      } catch (error) {
+        console.error('Error saving state:', error);
+      }
+    };
+
+    if (!isLoading) {
+      saveState();
+    }
+  }, [recoveryStarted, lastPressed, isLoading]);
 
   useEffect(() => {
     // Update the timer every second
@@ -56,6 +103,25 @@ export default function Index() {
   const BUTTON_HEIGHT = screenWidth * 0.6; // Square button
   const CONTAINER_WIDTH = screenWidth * 0.85; // 90% of screen width
   const CONTAINER_HEIGHT = 120; // Fixed height for container
+
+  // Show loading indicator while retrieving data
+  if (isLoading) {
+    return (
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: isDarkMode ? '#121212' : '#FFFFFF' }
+        ]}
+      >
+        <View style={styles.contentContainer}>
+          <Text style={[styles.appTitle, { color: textColor }]}>
+            QuitGambling
+          </Text>
+          <Text style={{ color: textColor }}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
