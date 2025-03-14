@@ -99,8 +99,8 @@ export default function Index() {
   const screenWidth = Dimensions.get('window').width;
   
   // Dimensions for button and container
-  const BUTTON_WIDTH = screenWidth * 0.6; // 60% of screen width
-  const BUTTON_HEIGHT = screenWidth * 0.6; // Square button
+  const BUTTON_WIDTH = screenWidth * 0.55; // 60% of screen width
+  const BUTTON_HEIGHT = screenWidth * 0.55; // Square button
   const CONTAINER_WIDTH = screenWidth * 0.85; // 90% of screen width
   const CONTAINER_HEIGHT = 120; // Fixed height for container
 
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   appTitle: {
-    fontSize: 42,
+    fontSize: 48,
     fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
